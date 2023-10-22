@@ -32,13 +32,9 @@ Version=WIH v1.0.0 (w3c)			;current verison for update
   ;Menu
   Menu, tray, NoStandard
   Menu, Tray, Click, 1
-  Menu, tray, add, Configuration, configuration
-  Menu, tray, Default, Configuration
-  Menu, tray, add
-  Menu, tray, add, About, About
-  Menu, tray, add
+  Menu, tray, add, Show, showApp
+  Menu, tray, Default, Show
   Menu, tray, add, Reload, ButtonReload
-  Menu, tray, add
   Menu, tray, add, Exit
   Menu, Tray, Icon, %A_ScriptDir%\%A_ScriptName%,1,1
 
@@ -119,36 +115,21 @@ Hotkey, RWin, disable
 	if %pause%
 	Hotkey,% VK(pause), PauseGame
 
-
-  IniRead, DontShowConfigTemp, %A_WorkingDir%\wih.ini,Others, DontShowConfigTemp, 0
-	IniRead, DontShowConfig, %A_WorkingDir%\wih.ini,Others, DontShowConfig, 0
-
   ;***************************
  	;Chat Suspending
 	IniRead, chat, %A_WorkingDir%\wih.ini, Others, chat, 1
-	IniRead, AutoDetect, %A_WorkingDir%\wih.ini, Others, AutoDetect, 1
 	if chat
 	{
 	Hotkey,*Enter, SendEnt
 	Hotkey,*NumpadEnter, SendEnt
 	Hotkey, ~*Esc, KEYSON
 	Hotkey, ~LButton, KEYSON
-	if AutoDetect
-	SetTimer, checklobby, 400
 	}
-;==================================================================================  
+;==================================================================================
 ;=====================================GUI==========================================
-;==================================================================================  
+;==================================================================================
 
-
-if DontShowConfig or DontShowConfigTemp
-{
-EmptyMem()
-IniWrite, 0, %A_WorkingDir%\wih.ini, Others, DontShowConfigTemp
-return
-}
-
-configuration:
+showApp:
 if ConfigCreated
 {
 gui, show, autosize center, %Version%
@@ -164,14 +145,11 @@ Menu, Options, Add, Shield LeftWin, SetShieldLWin
 Menu, Options, Add, Shield RightWin, SetShieldRWin
 
 Menu, Chat-Suspend, Add, Chat-free in game, Setchat
-Menu, Chat-Suspend, Add, Chat-free in lobby, Setautodetect
 Menu, Chat-Suspend, Add, Chat-free Info, ChatFreeInfo
 
 
 if chat
 menu, Chat-Suspend, check, Chat-free in game
-if AutoDetect
-menu, Chat-Suspend, check, Chat-free in lobby
 if ScrollIndicator
 menu, Options, check, Scroll Indicator
 if sound
@@ -214,44 +192,38 @@ if EnInventory=0
 Gosub, SwitchInv
 
 
-
-gui, add, checkbox,Checked%DontShowConfig% vDontShowConfig gDontShowConfig x16 y410, Don't show it later
 gui, font, bold
-Gui, Add, Button, x16 y440 w80 h30,Hide
-Gui, Add, Button, gButtonReload x110 y440 w80 h30,Save
-Gui, Add, Button, x204 y440 w80 h30,Exit
+Gui, Add, Button, x16 y410 w80 h30,Hide
+Gui, Add, Button, gButtonReload x110 y410 w80 h30,Save
+Gui, Add, Button, x204 y410 w80 h30,Exit
 
-;Gui, Show, x209 y100 h480 w300, %Version%
+;Gui, Show, x209 y100 h455 w300, %Version%
 ;Gui, show, autosize center, %Version%
-Gui, show, xCenter yCenter h480 w300, %Version%
+Gui, show, xCenter yCenter h455 w300, %Version%
 }
 EmptyMem()
 return
-
-IniWrite, 1, %A_WorkingDir%\wih.ini, Others, DontShowConfigTemp
 
 
 ChatFreeInfo:
 info =
 (
-This chat-free detecting system is my old from AHT v2.1b.
-It will work in warcraft 3 and will check enter presses. To detect chat. It's not reliable, but if you press enter only for chatting it should work.
-Chat-free in lobby will check pixel color in the top wc3 bar to detect if you are in game, so in lobby script will be off. 
-  
-The chat-detecting system is not as reliable as previous with reading wc3 memory. But in patch 1.30 I didn't find a way to make it work.
-You can use in options menu indicator to know if it is working as expected.
-  
-The benefit of this - it will work in any patch, but is not as stable as reading wc3 memory. Have fun!
+The system for suspending the script when chatting works in Warcraft 3 and will check enter presses to detect chat. It's not reliable, but if you press enter only for chatting it should work.
+
+You can enable the 'Scroll Indicator' or 'Sound Indicator' options located in the Options menu to know if it is working as expected.
+
+The Scroll Indicator sets Scroll Lock on your keyboard when the script is running.
+
+The Sound Indicator plays a sound when the script switches on or off.
 )
 
-MsgBox 64, Chat Free Info,%info%
+MsgBox 64, Suspend Script When Chatting Info,%info%
 return
+
 
 Help:
 run, https://wih.auct.eu/tutorial.html
 return
-
-
 
 
 About:
@@ -331,14 +303,6 @@ chat:=!chat
 IniWrite, %chat%, %A_WorkingDir%\wih.ini, Others, chat
 menu, Chat-Suspend, togglecheck, Chat-free in game
 return
-
-SetAutodetect:
-AutoDetect:=!AutoDetect
-IniWrite, %AutoDetect%, %A_WorkingDir%\wih.ini, Others, AutoDetect
-menu, Chat-Suspend, togglecheck, Chat-free in lobby
-return
-
-
 
 SetItem:
 ChoosenB=%A_GuiControl%
@@ -523,13 +487,11 @@ return
 ;=======================================SAVE INI=================================
 
 chat:
-AutoDetect:
 ScrollIndicator:
 sound:
 Shield:
 pause:
 toggle:
-DontShowConfig:
 gui, submit, nohide
 IniWrite, % %A_ThisLabel%, %A_WorkingDir%\wih.ini, Others, %A_ThisLabel%
 return
@@ -576,8 +538,6 @@ if !A_IsSuspended{
    Hotkey, ~LButton, KEYSON,on
    if ScrollIndicator
    SetScrollLockState, On
-   if AutoDetect
-   SetTimer, checklobby, on
    if Sound
    soundplay, *48
 }
@@ -588,8 +548,6 @@ Else{
    Hotkey, ~LButton, KEYSON,off
    if ScrollIndicator
    SetScrollLockState, Off
-   if AutoDetect
-   SetTimer, checklobby, off
    if Sound
    soundplay, *64
 }
@@ -600,8 +558,6 @@ Suspend, Permit
 Suspend, Off
 if ScrollIndicator
 SetScrollLockState, On
-if AutoDetect
-SetTimer, checklobby, on
 return
 
 SendEnt:
@@ -614,16 +570,12 @@ SendEnt:
 		SetScrollLockState, On
 		if Sound
 		soundplay, *48
-		if AutoDetect
-		SetTimer, checklobby, on
 		}
 	Else {
 		if ScrollIndicator
 		SetScrollLockState, Off
 		if Sound
 		soundplay, *64
-		if AutoDetect
-		SetTimer, checklobby, off
 		}
 	return
 
@@ -669,40 +621,3 @@ EmptyMem(PID="WIH v1.0.0"){
     DllCall("SetProcessWorkingSetSize", "UInt", h, "Int", -1, "Int", -1)
     DllCall("CloseHandle", "Int", h)
 }
-
-
-checklobby:
-IfWinActive, Warcraft III
-{
-x:=A_ScreenWidth*NewRelativeCoordinatesCheckChatX
-y:=A_ScreenHeight*NewRelativeCoordinatesCheckChatY
-PixelGetColor, color1, %x%, %y%
-;MsgBox 64, Info ,%color1%,2
-if color1=0x000000
-{
-   if A_IsSuspended {
-   Hotkey,*Enter, SendEnt,on
-   Hotkey,*NumpadEnter, SendEnt,on
-   Hotkey, ~*Esc, KEYSON,on
-   Hotkey, ~LButton, KEYSON,on
-   if ScrollIndicator
-   SetScrollLockState, On
-   if Sound
-   soundplay, *48
-   Suspend, Off
-   }
-}
-else{
-   if !A_IsSuspended{
-   Hotkey,*Enter, SendEnt,off
-   Hotkey,*NumpadEnter, SendEnt,off
-   Hotkey, ~*Esc, KEYSON,off
-   Hotkey, ~LButton, KEYSON,off
-   if ScrollIndicator
-   SetScrollLockState, Off
-   if Sound
-   soundplay, *64
-   Suspend, On
-   }
-   }
-  }
