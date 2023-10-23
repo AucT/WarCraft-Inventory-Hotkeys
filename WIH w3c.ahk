@@ -142,7 +142,7 @@ Hotkey, RWin, disable
 showApp:
 if ConfigCreated
 {
-gui, show, autosize center, %Version%
+  Gui, show, xCenter yCenter h455 w300, %Version%
 }
 else {
 ConfigCreated:=1
