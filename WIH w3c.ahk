@@ -21,11 +21,16 @@ GroupAdd, WC3DOTA , Warcraft III
   SetBatchLines, -1
   SetKeyDelay , -1, -1
   SetDefaultMouseSpeed, 0
-  #ifWinActive, ahk_group WC3DOTA
+
   VK_LIST = VK41,VK42,VK43,VK44,VK45,VK46,VK47,VK48,VK49,VK4A,VK4B,VK4C,VK4D,VK4E,VK4F,VK50,VK51,VK52,VK53,VK54,VK55,VK56,VK57,VK58,VK59,VK5A,VK30,VK31,VK32,VK33,VK34,VK35,VK36,VK37,VK38,VK39,VKC0,VKDB,VKDD,VKBE,VKBF,VKBA,VKDE,VKDC
   HK_LIST = A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,0,1,2,3,4,5,6,7,8,9,``,[,],.,/,;,',\
 
-Version=WIH v1.0.1 (w3c)
+Version=WIH v1.1.1 (w3c)
+
+IniRead, WorkEverywhere, %A_WorkingDir%\wih.ini, Others, WorkEverywhere, 0
+if !WorkEverywhere
+Hotkey, IfWinActive, ahk_group WC3DOTA
+
 ;************************************************STYLE COLOR**********************************************
 
 ;************************************************TRAY MENU********************************************************
@@ -36,7 +41,7 @@ Version=WIH v1.0.1 (w3c)
   Menu, tray, Default, Show
   Menu, tray, add, Reload, ButtonReload
   Menu, tray, add, Exit
-  Menu, Tray, Icon, %A_ScriptDir%\%A_ScriptName%,1,1
+  ;Menu, Tray, Icon, %A_ScriptDir%\%A_ScriptName%,1,1
 
   CoordMode,Mouse,Screen
   
@@ -46,7 +51,7 @@ Version=WIH v1.0.1 (w3c)
   else 
   SetScrollLockState, Off
 
-  Hotkey, IfWinActive, ahk_group WC3DOTA
+  ;Hotkey, IfWinActive, ahk_group WC3DOTA
   IniRead, WMC, %A_WorkingDir%\wih.ini,Others, WMC, 0
   IniRead, WMChotkey, %A_WorkingDir%\wih.ini,Others, WMChotkey, %A_Space%
 ;************************************************INVENTORY*************************************
@@ -122,6 +127,14 @@ Hotkey, RWin, disable
 	Hotkey, ~*Esc, KEYSON
 	Hotkey, ~LButton, KEYSON
 	}
+
+;************************************************KEY REMAP*********************************	
+  loop, 35 {
+    IniRead, krh%A_Index%, %A_WorkingDir%\wih.ini,RemapKey, KRhotkey%A_Index%, %A_Space%
+    IniRead, krv%A_Index%, %A_WorkingDir%\wih.ini,RemapKey, KRvalue%A_Index%, %A_Space%
+    if krh%A_Index%
+    Hotkey,% VK(krh%A_Index%), krv%A_Index%
+}
 ;==================================================================================
 ;=====================================GUI==========================================
 ;==================================================================================
@@ -140,6 +153,8 @@ Menu, Options, Add, Sound Indicator, SetSoundIndicator
 Menu, Options, Add
 Menu, Options, Add, Shield LeftWin, SetShieldLWin
 Menu, Options, Add, Shield RightWin, SetShieldRWin
+Menu, Options, Add
+Menu, Options, Add, Work Everywhere, WorkEverywhereFun
 
 Menu, Chat-Suspend, Add, Chat-free in game, Setchat
 Menu, Chat-Suspend, Add, Chat-free Info, ChatFreeInfo
@@ -155,6 +170,8 @@ if Shield
 menu, Options, check, Shield LeftWin
 if ShieldR
 menu, Options, check, Shield RightWin
+if WorkEverywhere
+menu, Options, check, Work Everywhere
 
 Menu, HelpMenu, Add, &About, About
 Menu, HelpMenu, Add, &How to use, Help
@@ -169,25 +186,45 @@ Menu, MyMenuBar, Add, Help, :HelpMenu
 Gui, Menu, MyMenuBar
 
 
-Gui, Add, Picture, x16 y32 w268 h320 , %A_temp%\wih_inventory.jpg
-Gui, Add, Checkbox, Checked%EnInventory% vEnInventory gSwitchInv x16 y12 , Enable Keys
-Gui, Add, button, vb1 gSetItem x55 y125 w75 h30,%h1%
-Gui, Add, button, vb2 gSetItem x150 y125 w75 h30,%h2%
-Gui, Add, button, vb3 gSetItem x55 y210 w75 h30,%h3%
-Gui, Add, button, vb4 gSetItem x150 y210 w75 h30,%h4%
-Gui, Add, button, vb5 gSetItem x55 y300 w75 h30,%h5%
-Gui, Add, button, vb6 gSetItem x150 y300 w75 h30,%h6%
+Gui, Add, Tab2, x0 y0 w470 h520 , Inventory|Remap
+Gui, Tab, Inventory
+
+Gui, Add, Picture, x16 y45 w268 h320 , %A_temp%\wih_inventory.jpg
+Gui, Add, Checkbox, Checked%EnInventory% vEnInventory gSwitchInv x16 y28 , Enable Keys
+Gui, Add, button, vb1 gSetItem x55 y138 w75 h30,%h1%
+Gui, Add, button, vb2 gSetItem x150 y138 w75 h30,%h2%
+Gui, Add, button, vb3 gSetItem x55 y223 w75 h30,%h3%
+Gui, Add, button, vb4 gSetItem x150 y223 w75 h30,%h4%
+Gui, Add, button, vb5 gSetItem x55 y313 w75 h30,%h5%
+Gui, Add, button, vb6 gSetItem x150 y313 w75 h30,%h6%
 
 
 
-Gui, Add, Hotkey, vtoggle gtoggle x16 y370 w60, %toggle%
-Gui, Add, Text, x81 y373, Pause Script
-Gui, Add, Hotkey, vpause gpause x155 y370 w60, %pause%
-Gui, Add, Text, x220 y373, Pause Game
+Gui, Add, Hotkey, vtoggle gtoggle x16 y375 w60, %toggle%
+Gui, Add, Text, x81 y378, Pause Script
+Gui, Add, Hotkey, vpause gpause x155 y375 w60, %pause%
+Gui, Add, Text, x220 y378, Pause Game
 
 if EnInventory=0
 Gosub, SwitchInv
 
+
+Gui, Tab, Remap
+gui, font
+gui, font, s14
+Gui, Add, ListBox, x16 y60 w268 h350 vRemap_Key gRemap_Update
+gui, font
+
+
+
+gui, add, hotkey,vHK_Remap x16 y30 w60 h25,
+gui, add, hotkey,vValue_Remap x86 y30 w60 h25,
+gui, add, button, gAddRemap x156 y30 w60 h25, ADD
+gui, add, button, gDeleteRemap x222 y30 w60 h25, DELETE
+
+gosub, Remap_KeyUpdate
+
+Gui, Tab
 
 gui, font, bold
 Gui, Add, Button, x16 y410 w80 h30,Hide
@@ -293,6 +330,12 @@ SetShieldRWin:
 ShieldR:=!ShieldR
 IniWrite, %ShieldR%, %A_WorkingDir%\wih.ini, Others, ShieldR
 menu, options, togglecheck, Shield RightWin
+return
+
+WorkEverywhereFun:
+WorkEverywhere:=!WorkEverywhere
+IniWrite, %WorkEverywhere%, %A_WorkingDir%\wih.ini, Others, WorkEverywhere
+menu, options, togglecheck, Work Everywhere
 return
 
 SetChat:
@@ -524,7 +567,11 @@ return
 disable:
 return
 
-;********************************************OTHER*********************************
+;********************************************REMAP*********************************
+
+
+
+;********************************************REMAP END*********************************
 
 Switch:
 Suspend
@@ -584,6 +631,123 @@ return
 
 
 
+
+Remap_Update:
+gui, submit, nohide
+Remap_Keyi=% getKRIndex(Remap_Key)
+IniRead, H, %A_WorkingDir%\wih.ini,RemapKey, KRhotkey%Remap_Keyi%, %A_Space%
+IniRead, M, %A_WorkingDir%\wih.ini,RemapKey, KRvalue%Remap_Keyi%, %A_Space%
+GUIControl ,,HK_Remap,%H%
+GUIControl ,,Value_Remap,%M%
+return
+
+Remap_KeyUpdate:
+  Remap_KeyList=
+  loop, 36 {
+  IniRead, rh, %A_WorkingDir%\wih.ini,RemapKey, KRhotkey%A_Index%, %A_Space%
+  IniRead, rv, %A_WorkingDir%\wih.ini,RemapKey, KRvalue%A_Index%, %A_Space%
+  if rh
+  Remap_KeyList=%Remap_KeyList%|%rh% => %rv%
+  }
+  GuiControl,, Remap_Key,%Remap_KeyList%
+return
+
+AddRemap:
+gui, submit, nohide
+if HK_Remap=
+{
+MsgBox 262160, Error ,Choose hotkey first!
+return
+}
+loop {
+IniRead, h, %A_WorkingDir%\wih.ini, RemapKey, KRhotkey%A_Index%, %A_Space%
+  if !h
+  {
+  i=%A_Index%
+  break
+  }
+}
+IniWrite, %HK_Remap%, %A_WorkingDir%\wih.ini, RemapKey, KRhotkey%i%
+IniWrite, %Value_Remap%, %A_WorkingDir%\wih.ini, RemapKey, KRvalue%i%
+
+gosub, Remap_KeyUpdate
+GUIControl ,,HK_Remap,
+GUIControl ,,Value_Remap,
+HK_Remap=
+Value_Remap=
+return
+
+
+DeleteRemap:
+gui, submit, nohide
+Remap_Keyi=% getKRIndex(Remap_Key)
+IniWrite, %A_Space%, %A_WorkingDir%\wih.ini,RemapKey, KRhotkey%Remap_Keyi%
+IniWrite, %A_Space%, %A_WorkingDir%\wih.ini,RemapKey, KRvalue%Remap_Keyi%
+gosub, Remap_KeyUpdate
+GUIControl ,,HK_Remap,
+GUIControl ,,Value_Remap,
+HK_Remap=
+Value_Remap=
+return
+
+getKRIndex(a) {
+global
+loop, 36 {
+IniRead, h, %A_WorkingDir%\wih.ini, RemapKey, KRhotkey%A_Index%, %A_Space%
+  if h and (h = SubStr(a,1,StrLen(h)))
+  {
+  i=%A_Index%
+  return i
+  }
+}
+return
+}
+
+krv1:
+krv2:
+krv3:
+krv4:
+krv5:
+krv6:
+krv7:
+krv8:
+krv9:
+krv10:
+krv11:
+krv12:
+krv13:
+krv14:
+krv15:
+krv16:
+krv17:
+krv18:
+krv19:
+krv20:
+krv21:
+krv22:
+krv23:
+krv24:
+krv25:
+krv26:
+krv27:
+krv28:
+krv29:
+krv30:
+krv31:
+krv32:
+krv33:
+krv34:
+krv35:
+
+v:=% %A_ThisLabel%
+v:=VK(v)
+
+if v {
+send {%v%}
+}
+return
+
+
 VK(Param)
 {
 	global
@@ -612,8 +776,8 @@ VK(Param)
 		}
 }
 
-EmptyMem(PID="WIH.v1.0.1.w3c"){
-    pid:=(pid="WIH.v1.0.1.w3c") ? DllCall("GetCurrentProcessId") : pid
+EmptyMem(PID="WIH.v1.1.1.w3c"){
+    pid:=(pid="WIH.v1.1.1.w3c") ? DllCall("GetCurrentProcessId") : pid
     h:=DllCall("OpenProcess", "UInt", 0x001F0FFF, "Int", 0, "Int", pid)
     DllCall("SetProcessWorkingSetSize", "UInt", h, "Int", -1, "Int", -1)
     DllCall("CloseHandle", "Int", h)
