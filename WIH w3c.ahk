@@ -41,7 +41,7 @@ Hotkey, IfWinActive, ahk_group WC3DOTA
   Menu, tray, Default, Show
   Menu, tray, add, Reload, ButtonReload
   Menu, tray, add, Exit
-  ;Menu, Tray, Icon, %A_ScriptDir%\%A_ScriptName%,1,1
+  Menu, Tray, Icon, %A_ScriptDir%\%A_ScriptName%,1,1
 
   CoordMode,Mouse,Screen
   
