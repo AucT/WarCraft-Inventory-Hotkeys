@@ -358,7 +358,7 @@ gui, add, checkbox, vWinModifier x+0 gHotkey_UpdateHotkey, &Win
 
 gui, add, groupbox,x10 w220 h180, Keys
 
-gui, add, radio, xp+5 yp+30 vRadioKey gHotkey_UpdateKeyList Checked, Standart
+gui, add, radio, xp+5 yp+30 vRadioKey gHotkey_UpdateKeyList Checked, Standard
 gui, add, radio, y+10 gHotkey_UpdateKeyList, Function
 gui, add, radio, y+10 gHotkey_UpdateKeyList, Numpad
 gui, add, radio, y+10 gHotkey_UpdateKeyList, Mouse
@@ -762,7 +762,9 @@ VK(Param)
 	if InStr(Param,".")
 	return % RegExReplace(Param, "\.$", "VKBE")
 	if InStr(Param,"/")
-	return % RegExReplace(Param, "\/$", "VKBF")
+  return % RegExReplace(Param, "\.$", "VKBE")
+	if InStr(Param,"``")
+	return % RegExReplace(Param, "\``$", "VKDF")
 	Hotkey:=RegExReplace(Param, "[\^\!\+\#]+(.*)", "$1")
 	If StrLen(Hotkey) > 1
 		return Param
