@@ -25,7 +25,7 @@ GroupAdd, WC3DOTA , Warcraft III
   VK_LIST = VK41,VK42,VK43,VK44,VK45,VK46,VK47,VK48,VK49,VK4A,VK4B,VK4C,VK4D,VK4E,VK4F,VK50,VK51,VK52,VK53,VK54,VK55,VK56,VK57,VK58,VK59,VK5A,VK30,VK31,VK32,VK33,VK34,VK35,VK36,VK37,VK38,VK39,VKC0,VKDB,VKDD,VKBE,VKBF,VKBA,VKDE,VKDC
   HK_LIST = A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,0,1,2,3,4,5,6,7,8,9,``,[,],.,/,;,',\
 
-Version=WIH v1.1.1 (w3c)
+Version=WIH v1.1.2 (w3c)
 
 IniRead, WorkEverywhere, %A_WorkingDir%\wih.ini, Others, WorkEverywhere, 0
 if !WorkEverywhere
@@ -358,7 +358,7 @@ gui, add, checkbox, vWinModifier x+0 gHotkey_UpdateHotkey, &Win
 
 gui, add, groupbox,x10 w220 h180, Keys
 
-gui, add, radio, xp+5 yp+30 vRadioKey gHotkey_UpdateKeyList Checked, Standart
+gui, add, radio, xp+5 yp+30 vRadioKey gHotkey_UpdateKeyList Checked, Standard
 gui, add, radio, y+10 gHotkey_UpdateKeyList, Function
 gui, add, radio, y+10 gHotkey_UpdateKeyList, Numpad
 gui, add, radio, y+10 gHotkey_UpdateKeyList, Mouse
@@ -763,6 +763,8 @@ VK(Param)
 	return % RegExReplace(Param, "\.$", "VKBE")
 	if InStr(Param,"/")
 	return % RegExReplace(Param, "\/$", "VKBF")
+  if InStr(Param,"``")
+  return % RegExReplace(Param, "\``$", "VKC0")
 	Hotkey:=RegExReplace(Param, "[\^\!\+\#]+(.*)", "$1")
 	If StrLen(Hotkey) > 1
 		return Param
@@ -776,8 +778,8 @@ VK(Param)
 		}
 }
 
-EmptyMem(PID="WIH.v1.1.1.w3c"){
-    pid:=(pid="WIH.v1.1.1.w3c") ? DllCall("GetCurrentProcessId") : pid
+EmptyMem(PID="WIH.v1.1.2.w3c"){
+    pid:=(pid="WIH.v1.1.2.w3c") ? DllCall("GetCurrentProcessId") : pid
     h:=DllCall("OpenProcess", "UInt", 0x001F0FFF, "Int", 0, "Int", pid)
     DllCall("SetProcessWorkingSetSize", "UInt", h, "Int", -1, "Int", -1)
     DllCall("CloseHandle", "Int", h)
